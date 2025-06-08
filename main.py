@@ -8,7 +8,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 # Put your subscription ID here or get from env var
-SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID", "your-subscription-id")
+SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID",)
 
 @app.get("/")
 def home():
