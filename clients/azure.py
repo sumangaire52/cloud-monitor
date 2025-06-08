@@ -32,7 +32,7 @@ def get_cpu_metrics(resource_id: str):
         resource_id,
         metric_names=["Percentage CPU"],
         timespan=(start_time, end_time),
-        interval=timedelta(minutes=5),
+        granularity=timedelta(minutes=5),
         aggregations=["Average"]
     )
 
