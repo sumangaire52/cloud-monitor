@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Azure VM Monitor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        select, button { font-size: 1rem; padding: 0.3rem; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>Azure VM Monitor</h1>
+
+    <form method="get" action="/dashboard">
+        <label for="vm">Select VM:</label>
+        <select name="vm_name" id="vm" onchange="this.form.submit()">
+            <option value="">--Select--</option>
+            {% for vm in vms %}
+                <option value="{{ vm.name }}" {% if selected_vm and vm.name == selected_vm.name %}selected{% endif %}>{{ vm.name }} ({{ vm.location }})</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_vm %}
+        <h2>Metrics for {{ selected_vm.name }}</h2>
+
+        {% if cpu_metrics %}
+            <table>
+                <thead>
+                    <tr><th>Time</th><th>CPU % (Average)</th></tr>
+                </thead>
+                <tbody>
+                    {% for point in cpu_metrics %}
+                        <tr>
+                            <td>{{ point.time }}</td>
+                            <td>{{ "%.2f"|format(point.average) }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No CPU metric data found for the last 30 minutes.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
