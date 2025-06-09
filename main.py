@@ -1,15 +1,16 @@
 from fastapi import FastAPI, Request, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
+
 from clients.azure import list_vms, get_cpu_metrics
 from clients.azure_k8s import get_aks_clusters, configure_kube_client, list_pods_with_metrics
+from settings import env
 import os
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-# Put your subscription ID here or get from env var
-SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID","64e44a6c-3e1d-48cf-8f68-37ff762027b2")
+SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID",env.AZURE_SUBSCRIPTION_ID)
 
 @app.get("/")
 def home():
