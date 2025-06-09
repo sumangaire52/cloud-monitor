@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AKS Pod Monitor</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <h1>AKS Pod Monitor</h1>
+
+    <form method="get" action="/k8s-dashboard">
+        <label for="cluster">Select AKS Cluster:</label>
+        <select name="cluster" id="cluster" onchange="this.form.submit()">
+            <option value="">--Choose Cluster--</option>
+            {% for c in clusters %}
+                <option value="{{ c.name }}" {% if selected_cluster and c.name == selected_cluster.name %}selected{% endif %}>
+                    {{ c.name }} ({{ c.location }})
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if pod_stats %}
+        <h2>Pods in Cluster: {{ selected_cluster.name }}</h2>
+        <table>
+            <tr><th>Name</th><th>Namespace</th><th>Status</th><th>Node</th><th>CPU</th><th>Memory</th></tr>
+            {% for pod in pod_stats %}
+                <tr>
+                    <td>{{ pod.name }}</td>
+                    <td>{{ pod.namespace }}</td>
+                    <td>{{ pod.status }}</td>
+                    <td>{{ pod.node }}</td>
+                    <td>{{ pod.cpu }}</td>
+                    <td>{{ pod.memory }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
