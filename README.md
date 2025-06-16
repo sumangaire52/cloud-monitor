@@ -61,7 +61,7 @@ cloud-monitor/
 
 ## 🔐 Prerequisites
 
-- Python 3.9+
+- Python 3.11+
 - An active Azure subscription
 - Azure resources:
   - At least one AKS cluster
@@ -72,15 +72,16 @@ cloud-monitor/
 
 ## ⚙️ Environment Setup
 
+
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/yourusername/cloud-monitor.git
+   git clone https://github.com/sumangaire52/cloud-monitor.git
    cd cloud-monitor
    ```
 
 2. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   uv sync --frozen --no-cache
    ```
 
 3. **Set up environment variables**
@@ -101,7 +102,7 @@ cloud-monitor/
 ## ▶️ Run the App
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn main:app --reload
 ```
 
 Visit:
@@ -121,37 +122,6 @@ Visit:
   ```
   /k8s-dashboard?cluster=my-aks-cluster
   ```
-
----
-
-## 🛡️ Security Tips
-
-- Do not hardcode credentials — use `.env` or Azure-managed identities.
-- Add API key protection or OAuth2 if deploying publicly.
-- Avoid exposing metrics endpoints without auth.
-
----
-
-## 🧪 Testing (Optional)
-
-You can write unit tests using `pytest` for:
-- Azure client methods (mocked)
-- FastAPI route responses
-- Jinja template context
-
----
-
-## 🐳 Docker (Optional)
-
-```Dockerfile
-FROM python:3.11
-
-WORKDIR /app
-COPY . .
-RUN pip install -r requirements.txt
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
 
 ---
 
