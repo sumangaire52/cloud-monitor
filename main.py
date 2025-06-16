@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request, Query
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
 
 from clients.azure import list_vms, get_cpu_metrics
 from clients.azure_k8s import (
@@ -18,9 +17,8 @@ SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID", env.AZURE_SUBSCRIPTION_ID)
 
 
 @app.get("/")
-def home():
-    # Redirect to dashboard for better UX
-    return RedirectResponse("/dashboard")
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/dashboard")
