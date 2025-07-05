@@ -22,10 +22,23 @@
                 </option>
             {% endfor %}
         </select>
+
+        {% if selected_cluster %}
+            <br><br>
+            <label for="namespace">Select Namespace:</label>
+            <select name="namespace" id="namespace" onchange="this.form.submit()">
+                <option value="">--Choose Namespace--</option>
+                {% for ns in namespaces %}
+                    <option value="{{ ns }}" {% if namespace == ns %}selected{% endif %}>
+                        {{ ns }}
+                    </option>
+                {% endfor %}
+            </select>
+        {% endif %}
     </form>
 
     {% if pod_stats %}
-        <h2>Pods in Cluster: {{ selected_cluster.name }}</h2>
+        <h2>Pods in {{ namespace if namespace else 'All Namespaces' }} of Cluster: {{ selected_cluster.name }}</h2>
         <table>
             <tr><th>Name</th><th>Namespace</th><th>Status</th><th>Node</th><th>CPU</th><th>Memory</th></tr>
             {% for pod in pod_stats %}
