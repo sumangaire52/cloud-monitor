@@ -6,6 +6,7 @@ from clients.azure_k8s import (
     get_aks_clusters,
     configure_kube_client,
     list_pods_with_metrics,
+    list_namespaces,
 )
 from settings import env
 import os
@@ -45,10 +46,13 @@ def dashboard(request: Request, vm_name: str = Query(None)):
 
 
 @app.get("/k8s-dashboard")
-def k8s_dashboard(request: Request, cluster: str = Query(None)):
-    clusters = get_aks_clusters(SUBSCRIPTION_ID)
+def k8s_dashboard(
+    request: Request, cluster: str = Query(None), namespace: str = Query(None)
+):
+    clusters = get_aks_clusters(subscription_id=SUBSCRIPTION_ID)
     selected_cluster = None
     pod_stats = []
+    namespaces = []
 
     if cluster:
         selected_cluster = next((c for c in clusters if c["name"] == cluster), None)
@@ -56,7 +60,12 @@ def k8s_dashboard(request: Request, cluster: str = Query(None)):
             configure_kube_client(
                 selected_cluster["resource_group"], selected_cluster["name"]
             )
-            pod_stats = list_pods_with_metrics()
+            namespaces = list_namespaces(
+                selected_cluster["resource_group"], selected_cluster["name"]
+            )
+
+            if namespace:
+                pod_stats = list_pods_with_metrics(namespace=namespace)
 
     return templates.TemplateResponse(
         "k8s_dashboard.html",
@@ -64,6 +73,8 @@ def k8s_dashboard(request: Request, cluster: str = Query(None)):
             "request": request,
             "clusters": clusters,
             "selected_cluster": selected_cluster,
+            "namespace": namespace,
+            "namespaces": namespaces,
             "pod_stats": pod_stats,
         },
     )

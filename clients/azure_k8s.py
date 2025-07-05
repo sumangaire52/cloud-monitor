@@ -20,6 +20,13 @@ def get_aks_clusters(subscription_id: str):
     return clusters
 
 
+def list_namespaces(resource_group: str, cluster_name: str):
+    configure_kube_client(resource_group, cluster_name)
+    v1 = client.CoreV1Api()
+    namespaces = v1.list_namespace()
+    return [ns.metadata.name for ns in namespaces.items]
+
+
 def configure_kube_client(resource_group: str, cluster_name: str):
     # Uses az CLI to update kubeconfig
     subprocess.run(
@@ -38,12 +45,15 @@ def configure_kube_client(resource_group: str, cluster_name: str):
     config.load_kube_config()  # Load kube config to connect with client
 
 
-def list_pods_with_metrics():
+def list_pods_with_metrics(namespace: str = None):
     v1 = client.CoreV1Api()
     metrics = client.CustomObjectsApi()
 
     pod_stats = []
-    pods = v1.list_pod_for_all_namespaces(watch=False)
+    if namespace:
+        pods = v1.list_namespaced_pod(namespace=namespace)
+    else:
+        pods = v1.list_pod_for_all_namespaces(watch=False)
     for pod in pods.items:
         pod_info = {
             "name": pod.metadata.name,
