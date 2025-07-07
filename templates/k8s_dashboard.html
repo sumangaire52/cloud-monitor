@@ -7,6 +7,24 @@
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
         th { background: #f5f5f5; }
+        a.button {
+            padding: 4px 8px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+        button.delete-btn {
+            background: none;
+            border: none;
+            color: red;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        form.inline-form {
+            display: inline;
+        }
     </style>
 </head>
 <body>
@@ -40,7 +58,15 @@
     {% if pod_stats %}
         <h2>Pods in {{ namespace if namespace else 'All Namespaces' }} of Cluster: {{ selected_cluster.name }}</h2>
         <table>
-            <tr><th>Name</th><th>Namespace</th><th>Status</th><th>Node</th><th>CPU</th><th>Memory</th></tr>
+            <tr>
+                <th>Name</th>
+                <th>Namespace</th>
+                <th>Status</th>
+                <th>Node</th>
+                <th>CPU</th>
+                <th>Memory</th>
+                <th>Actions</th>
+            </tr>
             {% for pod in pod_stats %}
                 <tr>
                     <td>{{ pod.name }}</td>
@@ -49,6 +75,19 @@
                     <td>{{ pod.node }}</td>
                     <td>{{ pod.cpu }}</td>
                     <td>{{ pod.memory }}</td>
+                    <td>
+                        <a class="button"
+                           href="/terminal?cluster={{ selected_cluster.name }}&namespace={{ pod.namespace }}&pod={{ pod.name }}"
+                           target="_blank">Terminal</a>
+
+                        <form method="post" action="/delete-pod" class="inline-form"
+                              onsubmit="return confirm('Are you sure you want to delete this pod?');">
+                            <input type="hidden" name="cluster" value="{{ selected_cluster.name }}">
+                            <input type="hidden" name="namespace" value="{{ pod.namespace }}">
+                            <input type="hidden" name="pod" value="{{ pod.name }}">
+                            <button type="submit" class="delete-btn" title="Delete Pod">🗑️</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </table>

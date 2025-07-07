@@ -1,5 +1,8 @@
-from fastapi import FastAPI, Request, Query
+from fastapi import FastAPI, Request, Query, Form
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
+from fastapi import status
+from kubernetes import client
 
 from clients.azure import list_vms, get_cpu_metrics
 from clients.azure_k8s import (
@@ -77,4 +80,34 @@ def k8s_dashboard(
             "namespaces": namespaces,
             "pod_stats": pod_stats,
         },
+    )
+
+
+@app.post("/delete-pod")
+def delete_pod(
+    request: Request,
+    cluster: str = Form(...),
+    namespace: str = Form(...),
+    pod: str = Form(...),
+):
+    clusters = get_aks_clusters(subscription_id=SUBSCRIPTION_ID)
+    selected_cluster = next((c for c in clusters if c["name"] == cluster), None)
+
+    if not selected_cluster:
+        return RedirectResponse(
+            url="/k8s-dashboard", status_code=status.HTTP_303_SEE_OTHER
+        )
+
+    try:
+        configure_kube_client(
+            selected_cluster["resource_group"], selected_cluster["name"]
+        )
+        v1 = client.CoreV1Api()
+        v1.delete_namespaced_pod(name=pod, namespace=namespace)
+    except Exception as e:
+        raise e from e
+
+    return RedirectResponse(
+        url=f"/k8s-dashboard?cluster={cluster}&namespace={namespace}",
+        status_code=status.HTTP_303_SEE_OTHER,
     )
