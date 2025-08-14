@@ -22,12 +22,6 @@ A lightweight monitoring dashboard built with **FastAPI** to track **Azure Kuber
 
 ---
 
-## 📸 Screenshots
-
-*(Add screenshots here if available: dashboard UI, VM metrics chart, etc.)*
-
----
-
 ## 🏗️ Tech Stack
 
 - **Backend**: FastAPI
